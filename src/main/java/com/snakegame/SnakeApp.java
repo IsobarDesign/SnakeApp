@@ -29,7 +29,7 @@ public class SnakeApp extends Application {
     private long moveDelay = INITIAL_MOVE_DELAY;
     private Random random = new Random();
     // current high-level game state (start screen, running, paused, game over)
-    private enum GameState { START, RUNNING, PAUSED, GAME_OVER }
+    private enum GameState { MENU ,START, RUNNING, PAUSED, GAME_OVER }
     private GameState gameState = GameState.START;
 
     private void initializeGame() {
@@ -97,6 +97,27 @@ public class SnakeApp extends Application {
 
         double cx = (GRID_WIDTH * TILE_SIZE) / 2.0;
         double cy = (GRID_HEIGHT * TILE_SIZE) / 2.0;
+
+        //Menu
+        if (gameState == GameState.MENU){
+            String title = "SNAKE GAME";
+            String instr1 = "Press ENTER to start the game ";
+            String instr2 = "S - Scoreboard";
+            String instr3 = "Q - Quit";
+
+            gc.setFill(Color.rgb(0, 0, 0, 0.6));
+            gc.fillRect(0,0,GRID_WIDTH * GRID_HEIGHT * TILE_SIZE, GRID_HEIGHT * TILE_SIZE);
+
+            gc.setFill(Color.WHITE);
+            gc.setFont(Font.font(36));
+            gc.fillText(title , cx -60 , cy -100);
+
+            gc.setFont(Font.font(18));
+            gc.fillText(instr1 , cx - 70 , cy );
+            gc.fillText(instr2 , cx - 70 , cy - 30);
+            gc.fillText(instr3 , cx -70 , cy - 60);
+
+        }
 
         // overlays for different states
         if (gameState == GameState.START) {
@@ -210,7 +231,7 @@ private void update() {
     Scene scene = new Scene(root, GRID_WIDTH * TILE_SIZE, GRID_HEIGHT * TILE_SIZE);
     gc = canvas.getGraphicsContext2D();
     // don't auto-start the game here; show start screen until user presses ENTER
-
+    gameState = GameState.MENU;    
     primaryStage.setTitle("Snake Game");
     primaryStage.setScene(scene);
     primaryStage.show();
@@ -219,6 +240,21 @@ private void update() {
 
         scene.setOnKeyPressed(e -> {
             KeyCode code = e.getCode();
+
+            if (gameState == GameState.MENU) {
+                switch (code) {
+                    case ENTER -> {
+                        initializeGame();
+                    }
+                    case S -> {
+                        // Show scoreboard - to be implemented
+                    }
+                    case Q -> {
+                        primaryStage.close();
+                    }
+                    default -> {}
+                }
+            }
 
             // movement keys only have effect while running
             if (gameState == GameState.RUNNING) {
