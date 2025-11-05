@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.animation.AnimationTimer;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 public class SnakeApp extends Application {
@@ -118,11 +119,34 @@ public class SnakeApp extends Application {
     }
     
     private void saveScoreWithName(int score, String name) {
-        try (java.io.BufferedWriter bw = new java.io.BufferedWriter(
-                new java.io.FileWriter("scores.txt", true))) {
-            bw.write(name + ": " + score);
-            bw.newLine();
-        } catch (Exception e) {
+        java.util.List<String> lines = new java.util.ArrayList<>();
+        try (java.io.BufferedReader br = new java.io.BufferedReader(
+            new java.io.FileReader("scores.txt"))){
+                String line ;
+                while ((line = br.readLine()) != null){
+                    lines.add(line);
+
+                }
+            } catch (Exception e) {
+    }
+    lines.add(name + " " + score);
+
+    lines.sort((a,b)-> {
+        try {
+            int scoreA= Integer.parseInt(a.replaceAll("\\D",""));
+            int scoreB= Integer.parseInt(b.replaceAll("\\D",""));
+            return Integer.compare(scoreB,scoreA);
+        }catch(Exception ex){
+            return 0;
+        }
+    });
+    try(java.io.BufferedWriter bw =new java.io.BufferedWriter(
+        new java.io.FileWriter("scores.txt", false ))){
+            for(String s : lines){
+                bw.write(s);
+                bw.newLine();
+            }
+        }catch (Exception e){
             System.err.println("Error saving score: " + e.getMessage());
         }
     }
